@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>보안 예방 가이드 액세스</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+KR:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      width: 100%;
+      overflow-x: hidden;
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #0a0a0a;
+      color: #fff;
+    }
+
+    /* Animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(255, 0, 100, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 255, 200, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(100, 0, 255, 0.08) 0%, transparent 50%);
+      animation: bgShift 20s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    @keyframes bgShift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(-5%, 5%) scale(1.05); }
+      66% { transform: translate(5%, -5%) scale(0.95); }
+    }
+
+    /* Grid pattern */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    /* Header Section */
+    .header {
+      text-align: center;
+      margin-bottom: 60px;
+      animation: fadeInDown 0.8s ease-out;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .header-badge {
+      display: inline-block;
+      padding: 8px 20px;
+      background: rgba(0, 255, 204, 0.1);
+      border: 1px solid rgba(0, 255, 204, 0.3);
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 2px;
+      color: #00ffcc;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 3rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #ffffff, #00ffcc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.8;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* QR Code Section */
+    .qr-section {
+      display: flex;
+      gap: 60px;
+      align-items: center;
+      max-width: 1200px;
+      width: 100%;
+      animation: fadeInScale 1s ease-out 0.2s both;
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.9) translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    /* QR Code Card */
+    .qr-card {
+      flex: 0 0 auto;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(20px);
+      border: 2px solid rgba(0, 255, 204, 0.3);
+      padding: 40px;
+      position: relative;
+      box-shadow: 0 0 60px rgba(0, 255, 204, 0.2);
+    }
+
+    .qr-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #00ffcc, #ff0066, #00ffcc);
+      z-index: -1;
+      opacity: 0;
+      animation: borderGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes borderGlow {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 0.3; }
+    }
+
+    .qr-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .qr-header h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #00ffcc;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+    }
+
+    .qr-header p {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 1px;
+    }
+
+    .qr-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .qr-image {
+      display: block;
+      width: 300px;
+      height: 300px;
+      background: white;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Scanning animation overlay */
+    .scan-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #00ffcc, transparent);
+      animation: scan 2s ease-in-out infinite;
+      z-index: 2;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+
+    @keyframes scan {
+      0%, 100% { transform: translateY(0); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(300px); opacity: 0; }
+    }
+
+    /* Corner decorations */
+    .qr-corner {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border: 2px solid #00ffcc;
+    }
+
+    .qr-corner.tl {
+      top: -15px;
+      left: -15px;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .qr-corner.tr {
+      top: -15px;
+      right: -15px;
+      border-left: none;
+      border-bottom: none;
+    }
+
+    .qr-corner.bl {
+      bottom: -15px;
+      left: -15px;
+      border-right: none;
+      border-top: none;
+    }
+
+    .qr-corner.br {
+      bottom: -15px;
+      right: -15px;
+      border-left: none;
+      border-top: none;
+    }
+
+    .qr-footer {
+      margin-top: 25px;
+      text-align: center;
+    }
+
+    .qr-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(0, 255, 204, 0.1);
+      border: 1px solid rgba(0, 255, 204, 0.3);
+      font-size: 0.85rem;
+      color: #00ffcc;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #00ffcc;
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+
+    /* Info Panel */
+    .info-panel {
+      flex: 1;
+      max-width: 500px;
+    }
+
+    .info-card {
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .info-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(180deg, #00ffcc, #ff0066);
+    }
+
+    .info-card h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.3rem;
+      color: #00ffcc;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .info-card ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .info-card li {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.6;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .info-card li:last-child {
+      border-bottom: none;
+    }
+
+    .info-card li::before {
+      content: '▹';
+      color: #00ffcc;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .stat-box {
+      background: rgba(0, 255, 204, 0.05);
+      border: 1px solid rgba(0, 255, 204, 0.2);
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-box:hover {
+      background: rgba(0, 255, 204, 0.1);
+      border-color: rgba(0, 255, 204, 0.4);
+      transform: translateY(-5px);
+    }
+
+    .stat-number {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      font-weight: 900;
+      color: #00ffcc;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 1px;
+    }
+
+    /* Back Button */
+    .back-btn {
+      position: fixed;
+      top: 30px;
+      left: 30px;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.8);
+      padding: 12px 24px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .back-btn:hover {
+      background: rgba(0, 255, 204, 0.2);
+      border-color: #00ffcc;
+      color: #00ffcc;
+      transform: translateX(-5px);
+    }
+
+    /* Warning Banner */
+    .warning-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 0, 102, 0.1);
+      backdrop-filter: blur(10px);
+      border-top: 2px solid rgba(255, 0, 102, 0.3);
+      padding: 15px 20px;
+      text-align: center;
+      z-index: 100;
+      animation: slideUp 0.5s ease-out 1s both;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    .warning-banner p {
+      color: #ff0066;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      margin: 0;
+    }
+
+    .warning-banner span {
+      color: #00ffcc;
+      font-weight: 700;
+    }
+
+    /* Floating particles */
+    .particle {
+      position: fixed;
+      width: 4px;
+      height: 4px;
+      background: #00ffcc;
+      border-radius: 50%;
+      opacity: 0;
+      animation: float 10s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    @keyframes float {
+      0% {
+        opacity: 0;
+        transform: translateY(100vh) translateX(0) rotate(0deg);
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-100vh) translateX(100px) rotate(360deg);
+      }
+    }
+
+    .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+    .particle:nth-child(2) { left: 20%; animation-delay: 2s; }
+    .particle:nth-child(3) { left: 30%; animation-delay: 4s; }
+    .particle:nth-child(4) { left: 40%; animation-delay: 6s; }
+    .particle:nth-child(5) { left: 50%; animation-delay: 8s; }
+    .particle:nth-child(6) { left: 60%; animation-delay: 1s; }
+    .particle:nth-child(7) { left: 70%; animation-delay: 3s; }
+    .particle:nth-child(8) { left: 80%; animation-delay: 5s; }
+    .particle:nth-child(9) { left: 90%; animation-delay: 7s; }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .qr-section {
+        flex-direction: column;
+        gap: 40px;
+      }
+
+      .info-panel {
+        max-width: 100%;
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .header p {
+        font-size: 0.95rem;
+      }
+
+      .qr-card {
+        padding: 30px 20px;
+      }
+
+      .qr-image {
+        width: 250px;
+        height: 250px;
+      }
+
+      .info-card {
+        padding: 20px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .back-btn {
+        top: 20px;
+        left: 20px;
+        padding: 10px 16px;
+        font-size: 0.8rem;
+      }
+
+      .warning-banner {
+        padding: 12px 15px;
+      }
+
+      .warning-banner p {
+        font-size: 0.8rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .qr-image {
+        width: 200px;
+        height: 200px;
+        padding: 15px;
+      }
+
+      .header h1 {
+        font-size: 1.6rem;
+      }
+
+      .qr-header h2 {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating particles -->
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+
+  <!-- Back button -->
+  <button class="back-btn" onclick="goBack()">
+    ← BACK
+  </button>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-badge">🛡️ Security Prevention Guide</div>
+      <h1>보안 예방 가이드</h1>
+      <p>스마트폰으로 QR 코드를 스캔하여<br>스미싱/큐싱 예방법을 확인하세요</p>
+    </div>
+
+    <!-- QR Code Section -->
+    <div class="qr-section">
+      <!-- QR Card -->
+      <div class="qr-card">
+        <div class="qr-header">
+          <h2>ACCESS CODE</h2>
+          <p>SCAN TO UNLOCK</p>
+        </div>
+        
+        <div class="qr-wrapper">
+          <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0id2hpdGUiLz4KICA8IS0tIFRvcCBsZWZ0IGNvcm5lciAtLT4KICA8cmVjdCB4PSIyMCIgeT0iMjAiIHdpZHRoPSI3MCIgaGVpZ2h0PSI3MCIgZmlsbD0iYmxhY2siLz4KICA8cmVjdCB4PSIzMCIgeT0iMzAiIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgZmlsbD0id2hpdGUiLz4KICA8cmVjdCB4PSI0MCIgeT0iNDAiIHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCIgZmlsbD0iYmxhY2siLz4KICAKICA8IS0tIFRvcCByaWdodCBjb3JuZXIgLS0+CiAgPHJlY3QgeD0iMjEwIiB5PSIyMCIgd2lkdGg9IjcwIiBoZWlnaHQ9IjcwIiBmaWxsPSJibGFjayIvPgogIDxyZWN0IHg9IjIyMCIgeT0iMzAiIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgZmlsbD0id2hpdGUiLz4KICA8cmVjdCB4PSIyMzAiIHk9IjQwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIGZpbGw9ImJsYWNrIi8+CiAgCiAgPCEtLSBCb3R0b20gbGVmdCBjb3JuZXIgLS0+CiAgPHJlY3QgeD0iMjAiIHk9IjIxMCIgd2lkdGg9IjcwIiBoZWlnaHQ9IjcwIiBmaWxsPSJibGFjayIvPgogIDxyZWN0IHg9IjMwIiB5PSIyMjAiIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgZmlsbD0id2hpdGUiLz4KICA8cmVjdCB4PSI0MCIgeT0iMjMwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIGZpbGw9ImJsYWNrIi8+CiAgCiAgPCEtLSBRUiBjb2RlIHBhdHRlcm4gLS0+CiAgPHJlY3QgeD0iMTEwIiB5PSIyMCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSJibGFjayIvPgogIDxyZWN0IHg9IjEzMCIgeT0iMjAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0iYmxhY2siLz4KICA8cmVjdCB4PSIxNTAiIHk9IjIwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9ImJsYWNrIi8+CiAgPHJlY3QgeD0iMTcwIiB5PSIyMCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSJibGFjayIvPgogIDxyZWN0IHg9IjE5MCIgeT0iMjAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0iYmxhY2siLz4KICAKICA8IS0tIE1pZGRsZSBzZWN0aW9uIC0tPgogIDxyZWN0IHg9IjExMCIgeT0iMTEwIiB3aWR0aD0iODAiIGhlaWdodD0iODAiIGZpbGw9ImJsYWNrIi8+CiAgPHJlY3QgeD0iMTIwIiB5PSIxMjAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgZmlsbD0id2hpdGUiLz4KICA8cmVjdCB4PSIxMzAiIHk9IjEzMCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSJibGFjayIvPgogIAogIDwhLS0gQWRkaXRpb25hbCBwYXR0ZXJucyAtLT4KICA8cmVjdCB4PSIyMCIgeT0iMTEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9ImJsYWNrIi8+CiAgPHJlY3QgeD0iNDAiIHk9IjExMCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSJibGFjayIvPgogIDxyZWN0IHg9IjYwIiB5PSIxMTAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0iYmxhY2siLz4KICA8cmVjdCB4PSI4MCIgeT0iMTEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9ImJsYWNrIi8+CiAgCiAgPHJlY3QgeD0iMjEwIiB5PSIxMTAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0iYmxhY2siLz4KICA8cmVjdCB4PSIyMzAiIHk9IjExMCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSJibGFjayIvPgogIDxyZWN0IHg9IjI1MCIgeT0iMTEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9ImJsYWNrIi8+CiAgPHJlY3QgeD0iMjcwIiB5PSIxMTAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0iYmxhY2siLz4KPC9zdmc+" 
+               alt="QR Code" 
+               class="qr-image" />
+          <div class="scan-line"></div>
+          <div class="qr-corner tl"></div>
+          <div class="qr-corner tr"></div>
+          <div class="qr-corner bl"></div>
+          <div class="qr-corner br"></div>
+        </div>
+
+        <div class="qr-footer">
+          <div class="qr-status">
+            <span class="status-dot"></span>
+            READY TO SCAN
+          </div>
+        </div>
+      </div>
+
+      <!-- Info Panel -->
+      <div class="info-panel">
+        <div class="info-card">
+          <h3>📱 스캔 방법</h3>
+          <ul>
+            <li>스마트폰의 카메라 앱을 실행하세요</li>
+            <li>QR 코드를 화면 중앙에 맞추세요</li>
+            <li>자동으로 링크가 인식됩니다</li>
+            <li>링크를 탭하여 가이드에 접속하세요</li>
+          </ul>
+        </div>
+
+        <div class="info-card">
+          <h3>🛡️ 제공 내용</h3>
+          <ul>
+            <li>스미싱 예방 체크리스트 (5개 항목)</li>
+            <li>큐싱(QR 피싱) 예방 가이드</li>
+            <li>일반 보안 수칙 및 팁</li>
+            <li>피해 발생 시 대응 방법</li>
+            <li>긴급 연락처 안내</li>
+          </ul>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-number">4</div>
+            <div class="stat-label">CATEGORIES</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">18</div>
+            <div class="stat-label">CHECKPOINTS</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number">24/7</div>
+            <div class="stat-label">PROTECTION</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Warning Banner -->
+  <div class="warning-banner">
+    <p>⚠️ <span>보안 경각심</span>은 디지털 시대의 필수 능력입니다. 지금 바로 예방법을 학습하세요!</p>
+  </div>
+
+  <script>
+    function goBack() {
+      window.history.back();
+    }
+
+    // Add interactive hover effect to Q
