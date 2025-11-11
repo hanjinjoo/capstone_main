@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>보안 위협 시뮬레이션 체험</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+KR:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #fff;
+      background: #0a0a0a;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Animated background pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(255, 0, 100, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 255, 200, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(100, 0, 255, 0.08) 0%, transparent 50%);
+      animation: bgShift 20s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    @keyframes bgShift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(-5%, 5%) scale(1.05); }
+      66% { transform: translate(5%, -5%) scale(0.95); }
+    }
+
+    /* Grid pattern overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 20px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(10, 10, 10, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, #00ffcc, #ff0066);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.3s;
+      letter-spacing: 1px;
+    }
+
+    .nav-links a:hover {
+      color: #00ffcc;
+    }
+
+    /* Hero section */
+    .hero {
+      text-align: center;
+      max-width: 1200px;
+      margin-top: 60px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      letter-spacing: 4px;
+      color: #00ffcc;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      font-weight: 300;
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 4rem;
+      font-weight: 900;
+      margin-bottom: 30px;
+      line-height: 1.2;
+      background: linear-gradient(135deg, #ffffff, #00ffcc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 80px rgba(0, 255, 204, 0.3);
+    }
+
+    .date {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: 8px;
+      margin-bottom: 60px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Button section */
+    .btn-container {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      margin-top: 40px;
+      align-items: center;
+    }
+
+    .btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 550px;
+      padding: 25px 35px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      text-decoration: none;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+      letter-spacing: 1px;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(135deg, #00ffcc, #ff0066);
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: -1;
+    }
+
+    .btn:hover::after {
+      width: 100%;
+    }
+
+    .btn:hover {
+      border-color: #00ffcc;
+      transform: translateX(10px);
+      box-shadow: 0 10px 40px rgba(0, 255, 204, 0.3);
+    }
+
+    .btn-icon {
+      font-size: 1.5rem;
+      transition: transform 0.4s;
+    }
+
+    .btn:hover .btn-icon {
+      transform: translateX(10px);
+    }
+
+    .btn-1 { --delay: 0.1s; }
+    .btn-2 { --delay: 0.2s; }
+    .btn-3 { --delay: 0.3s; }
+
+    .btn {
+      animation: fadeInUp 0.6s ease-out var(--delay) both;
+      cursor: pointer;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .warning-message {
+      font-size: 0.95rem;
+      color: #ff4d4d;
+      margin-top: -30px;
+      margin-bottom: 40px;
+      text-shadow: 0 0 5px rgba(255, 0, 0, 0.4);
+      animation: blink 1.8s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .info-line {
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: -20px;
+      margin-bottom: 30px;
+    }
+
+    .btn-3 {
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+    }
+    .btn-3:hover {
+      background: rgba(0, 255, 204, 0.2);
+      border-color: #00ffcc;
+      color: #fff;
+    }
+
+    /* Decorative elements */
+    .deco-circle {
+      position: fixed;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 255, 204, 0.2);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .deco-circle-1 {
+      width: 300px;
+      height: 300px;
+      top: 10%;
+      left: 5%;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .deco-circle-2 {
+      width: 200px;
+      height: 200px;
+      bottom: 15%;
+      right: 10%;
+      animation: float 6s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      50% { transform: translate(20px, 20px) rotate(180deg); }
+    }
+
+    /* Corner accent */
+    .corner-accent {
+      position: fixed;
+      width: 150px;
+      height: 150px;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .corner-accent::before,
+    .corner-accent::after {
+      content: '';
+      position: absolute;
+      background: linear-gradient(135deg, #00ffcc, transparent);
+    }
+
+    .corner-accent::before {
+      width: 2px;
+      height: 100%;
+    }
+
+    .corner-accent::after {
+      width: 100%;
+      height: 2px;
+    }
+
+    .corner-top-left {
+      top: 0;
+      left: 0;
+    }
+
+    .corner-top-left::before {
+      left: 0;
+      top: 0;
+    }
+
+    .corner-top-left::after {
+      left: 0;
+      top: 0;
+    }
+
+    .corner-bottom-right {
+      bottom: 0;
+      right: 0;
+      transform: rotate(180deg);
+    }
+
+    /* Footer */
+    footer {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.3);
+      z-index: 100;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav {
+        padding: 15px 20px;
+      }
+
+      .logo {
+        font-size: 1.2rem;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      .date {
+        font-size: 1rem;
+        letter-spacing: 4px;
+      }
+
+      .btn {
+        width: 90%;
+        padding: 20px 25px;
+        font-size: 0.95rem;
+      }
+
+      .deco-circle-1,
+      .deco-circle-2 {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+
+  <!-- Decorative elements -->
+  <div class="deco-circle deco-circle-1"></div>
+  <div class="deco-circle deco-circle-2"></div>
+  <div class="corner-accent corner-top-left"></div>
+  <div class="corner-accent corner-bottom-right"></div>
+
+  <!-- Main container -->
+  <div class="container">
+    <div class="hero">
+      <div class="subtitle"></div>사이버보안 플레이그라운드</div>
+
+      <h1>
+        보안 위협<br>
+        시뮬레이션 체험
+      </h1>
+
+      <div class="date">2025. 11. 13</div>
+      <p class="info-line">총 2가지 공격 시나리오를 직접 체험해보세요</p>
+      <p class="warning-message">⚠ 본 체험은 실제 보안 위협 사례를 바탕으로 구성되었습니다.</p>
+
+      <div class="btn-container">
+        <a href="sms_simulation.html" class="btn btn-1" title="문자 링크를 활용한 악성앱 설치 유도 스미싱 체험">
+          <span>링크를 활용한 스미싱 공격 체험하기</span>
+          <span class="btn-icon">→</span>
+        </a>
+
+        <a href="qr_library/qr_library_main.html" class="btn btn-2" title="QR코드를 이용한 피싱 사이트 유도 큐싱 체험">
+          <span>QR코드를 활용한 큐싱 공격 체험하기</span>
+          <span class="btn-icon">→</span>
+        </a>
+        <a href="security_guide.html" class="btn btn-3" title="보안 위협 예방 방법 확인하기">
+          <span>침해사고 예방 방법 보러가기</span>
+          <span class="btn-icon">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    Made with security awareness
+  </footer>
+
+</body>
+</html>

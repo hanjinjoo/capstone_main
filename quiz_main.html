@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>보안 경각심 테스트</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+KR:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #0a0a0a;
+    }
+
+    /* Animated background pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(255, 0, 100, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 255, 200, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(100, 0, 255, 0.08) 0%, transparent 50%);
+      animation: bgShift 20s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    @keyframes bgShift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(-5%, 5%) scale(1.05); }
+      66% { transform: translate(5%, -5%) scale(0.95); }
+    }
+
+    /* Grid pattern overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    #introSection {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: block;
+      z-index: 10;
+    }
+
+    #introVideo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: relative;
+      z-index: 10;
+    }
+
+    #soundBtn, #skipBtn {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      color: white;
+      border: 1px solid rgba(0, 255, 204, 0.3);
+      padding: 12px 20px;
+      border-radius: 0;
+      font-size: 1rem;
+      cursor: pointer;
+      z-index: 100;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      letter-spacing: 2px;
+      transition: all 0.3s ease;
+    }
+
+    #soundBtn:hover, #skipBtn:hover {
+      background: rgba(0, 255, 204, 0.2);
+      border-color: #00ffcc;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(0, 255, 204, 0.3);
+    }
+
+    #soundBtn {
+      bottom: 30px;
+      right: 30px;
+    }
+
+    #skipBtn {
+      bottom: 30px;
+      left: 30px;
+    }
+
+    #mainContent {
+      display: none;
+      height: 100%;
+      width: 100%;
+      position: relative;
+      z-index: 10;
+    }
+
+    #mainContent.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      position: relative;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(20px);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0;
+      padding: 4rem 3rem;
+      box-shadow: 0 0 60px rgba(0, 255, 204, 0.2);
+      max-width: 700px;
+      width: 90%;
+      text-align: center;
+      animation: fadeInScale 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.9) translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #ffffff, #00ffcc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1.5rem;
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 3rem;
+      line-height: 1.8;
+      font-weight: 300;
+    }
+
+    .start-btn {
+      position: relative;
+      padding: 1.2rem 3rem;
+      background: transparent;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border-radius: 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: 'Noto Sans KR', sans-serif;
+      letter-spacing: 2px;
+      overflow: hidden;
+    }
+
+    .start-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(135deg, #00ffcc, #ff0066);
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: -1;
+    }
+
+    .start-btn:hover::before {
+      width: 100%;
+    }
+
+    .start-btn:hover {
+      border-color: #00ffcc;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 40px rgba(0, 255, 204, 0.4);
+    }
+
+    .animated-bar {
+      margin-top: 3rem;
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      border-radius: 0;
+      position: relative;
+    }
+
+    .animated-bar::before {
+      content: "";
+      display: block;
+      height: 100%;
+      width: 40%;
+      background: linear-gradient(90deg, transparent, #00ffcc, transparent);
+      animation: moveBar 2s infinite ease-in-out;
+      position: absolute;
+    }
+
+    @keyframes moveBar {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(350%); }
+    }
+
+    .warning-text {
+      margin-top: 2.5rem;
+      font-size: 0.9rem;
+      color: #00ffcc;
+      opacity: 0.6;
+      letter-spacing: 1px;
+      font-weight: 300;
+    }
+
+    .nav {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      z-index: 100;
+    }
+
+    #quizStatsBtn {
+      display: none;
+    }
+
+    .nav button {
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.8);
+      padding: 0.8rem 1.5rem;
+      border-radius: 0;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+
+    .nav button:hover {
+      background: rgba(0, 255, 204, 0.2);
+      border-color: #00ffcc;
+      color: #00ffcc;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(0, 255, 204, 0.3);
+    }
+
+    /* Corner accents */
+    .corner-accent {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      pointer-events: none;
+    }
+
+    .corner-accent::before,
+    .corner-accent::after {
+      content: '';
+      position: absolute;
+      background: #00ffcc;
+      opacity: 0.5;
+    }
+
+    .corner-accent::before {
+      width: 2px;
+      height: 100%;
+    }
+
+    .corner-accent::after {
+      width: 100%;
+      height: 2px;
+    }
+
+    .corner-tl {
+      top: 0;
+      left: 0;
+    }
+
+    .corner-tl::before {
+      left: 0;
+      top: 0;
+    }
+
+    .corner-tl::after {
+      left: 0;
+      top: 0;
+    }
+
+    .corner-br {
+      bottom: 0;
+      right: 0;
+    }
+
+    .corner-br::before {
+      right: 0;
+      bottom: 0;
+    }
+
+    .corner-br::after {
+      right: 0;
+      bottom: 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .subtitle {
+        font-size: 0.95rem;
+      }
+
+      .container {
+        padding: 2.5rem 2rem;
+      }
+
+      .start-btn {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+      }
+
+      #soundBtn, #skipBtn {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+        bottom: 20px;
+      }
+
+      #soundBtn {
+        right: 20px;
+      }
+
+      #skipBtn {
+        left: 20px;
+      }
+
+      .nav {
+        top: 20px;
+        right: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 인트로 영상 섹션 -->
+  <div id="introSection">
+    <video id="introVideo" autoplay muted playsinline>
+      <source src="intro.mp4" type="video/mp4" />
+      브라우저가 비디오를 지원하지 않습니다.
+    </video>
+    <button id="soundBtn">SOUND ON</button>
+    <button id="skipBtn">SKIP</button>
+  </div>
+
+  <!-- 메인 컨텐츠 -->
+  <div id="mainContent">
+    <div class="container">
+      <div class="corner-accent corner-tl"></div>
+      <div class="corner-accent corner-br"></div>
+      
+      <h1>보안 경각심 테스트</h1>
+      <p class="subtitle">
+        당신은 피싱, 큐싱, 스미싱에 얼마나 취약할까?<br>
+        어두운 웹의 공격자들은 언제나 당신의 실수를 기다리고 있습니다.
+      </p>
+      <button class="start-btn" onclick="startTest()">테스트 시작하기</button>
+      <div class="animated-bar"></div>
+      <p class="warning-text">※ 경고: 실생활 사례 기반 시나리오 포함</p>
+    </div>
+  </div>
+
+  <script>
+    const video = document.getElementById('introVideo');
+    const soundBtn = document.getElementById('soundBtn');
+    const skipBtn = document.getElementById('skipBtn');
+    const introSection = document.getElementById('introSection');
+    const mainContent = document.getElementById('mainContent');
+    const quizStatsBtn = document.getElementById('quizStatsBtn');
+
+    // 사운드 버튼 클릭 시 소리 재생
+    soundBtn.addEventListener('click', () => {
+      video.muted = false;
+      video.currentTime = 0;
+      video.play();
+      soundBtn.textContent = 'SOUND ON ✓';
+      soundBtn.style.borderColor = '#00ffcc';
+      soundBtn.style.color = '#00ffcc';
+    });
+
+    // 영상이 끝나면 메인 페이지로 전환
+    video.addEventListener('ended', () => {
+      introSection.style.display = 'none';
+      mainContent.classList.add('active');
+      quizStatsBtn.style.display = 'block';
+    });
+
+    // 스킵 버튼 클릭 시 영상 건너뛰기
+    skipBtn.addEventListener('click', () => {
+      video.pause();
+      introSection.style.display = 'none';
+      mainContent.classList.add('active');
+      quizStatsBtn.style.display = 'block';
+    });
+
+    function startTest() {
+      location.href = "quiz.html";
+    }
+
+    function goToStats() {
+      location.href = "quiz_stats.html";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>시뮬레이션 인트로</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+KR:wght@300;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #0a0a0a;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(255, 0, 100, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 255, 200, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(100, 0, 255, 0.06) 0%, transparent 50%);
+      animation: bgShift 20s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    @keyframes bgShift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(-5%, 5%) scale(1.05); }
+      66% { transform: translate(5%, -5%) scale(0.95); }
+    }
+
+    /* Grid pattern */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* Cinema container */
+    .cinema-container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* Screen content */
+    .screen-content {
+      position: relative;
+      width: 95%;
+      height: 90vh;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(10, 10, 20, 0.95));
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+      overflow: hidden;
+      transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 1s ease-in-out;
+      border: 2px solid rgba(0, 255, 204, 0.1);
+      box-shadow: inset 0 0 60px rgba(0, 255, 204, 0.05), 0 0 80px rgba(0, 0, 0, 0.8);
+      padding: 3rem;
+    }
+
+    /* Corner accents for screen */
+    .screen-content::before {
+      content: '';
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border: 2px solid rgba(0, 255, 204, 0.4);
+      z-index: 10;
+      top: 10px;
+      left: 10px;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    /* Slide down animation */
+    @keyframes slideDown {
+      0% { 
+        transform: translateY(0); 
+        opacity: 1; 
+      }
+      100% { 
+        transform: translateY(120%); 
+        opacity: 0; 
+      }
+    }
+    .slide-down { 
+      animation: slideDown 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards; 
+    }
+
+    /* Images */
+    .screen-image {
+      width: 100%;
+      height: 100%;
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+      display: none;
+      animation: imageZoom 0.8s ease-out;
+      filter: drop-shadow(0 0 20px rgba(0, 255, 204, 0.3));
+    }
+
+    @keyframes imageZoom {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Text area */
+    .text-area {
+      width: 100%;
+      height: 100%;
+      padding: 3rem;
+      color: white;
+      font-size: 1.6rem;
+      line-height: 2.4rem;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .intro-question {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #ffffff, #00ffcc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .highlight { 
+      color: #ff0066; 
+      font-weight: 900;
+      text-shadow: 0 0 20px rgba(255, 0, 102, 0.5);
+    }
+
+    .emphasis { 
+      color: #00ffcc; 
+      font-weight: 900;
+      text-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
+    }
+
+    .text-group {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .text-group.show { 
+      opacity: 1; 
+      transform: translateY(0);
+    }
+
+    .text-group p {
+      margin: 0.8rem 0;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    /* Final message */
+    #final-message {
+      font-size: 2.5rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #ffffff, #00ffcc, #ff0066);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      opacity: 0;
+      transform: scale(0.9);
+      transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    #final-message.show { 
+      opacity: 1; 
+      transform: scale(1);
+    }
+
+    /* Skip button */
+    .skip-btn {
+      position: fixed;
+      bottom: 40px;
+      left: 40px;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 0;
+      padding: 14px 32px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      z-index: 1000;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 3px;
+      overflow: hidden;
+    }
+
+    .skip-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(135deg, #00ffcc, #ff0066);
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: -1;
+    }
+
+    .skip-btn:hover::before {
+      width: 100%;
+    }
+
+    .skip-btn:hover {
+      border-color: #00ffcc;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 255, 204, 0.3);
+    }
+
+    /* Progress indicator */
+    .progress-indicator {
+      position: absolute;
+      bottom: 50px;
+      right: 50px;
+      display: flex;
+      gap: 10px;
+      z-index: 1000;
+    }
+
+    .progress-dot {
+      width: 12px;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.4s ease;
+    }
+
+    .progress-dot.active {
+      background: #00ffcc;
+      border-color: #00ffcc;
+      box-shadow: 0 0 15px rgba(0, 255, 204, 0.6);
+    }
+
+    /* Scan line effect */
+    @keyframes scanline {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+
+    .scanline {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(transparent, rgba(0, 255, 204, 0.8), transparent);
+      animation: scanline 4s linear infinite;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* Corner accent bottom right */
+    .corner-accent {
+      content: '';
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border: 2px solid rgba(0, 255, 204, 0.4);
+      z-index: 10;
+      bottom: 10px;
+      right: 10px;
+      border-left: none;
+      border-top: none;
+      pointer-events: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .text-area {
+        font-size: 1.2rem;
+        line-height: 1.8rem;
+        padding: 2rem;
+      }
+
+      .intro-question {
+        font-size: 1.5rem;
+      }
+
+      #final-message {
+        font-size: 1.8rem;
+      }
+
+      .skip-btn {
+        bottom: 30px;
+        left: 30px;
+        padding: 12px 24px;
+        font-size: 0.9rem;
+      }
+
+      .progress-indicator {
+        bottom: 30px;
+        right: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cinema-container">
+  <button class="skip-btn" id="skipBtn">SKIP ▶</button>
+
+  <div class="progress-indicator" id="progressIndicator">
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+    <div class="progress-dot"></div>
+  </div>
+
+  <div class="screen-content" id="screen">
+    <div class="scanline"></div>
+    <div class="corner-accent"></div>
+    <img class="screen-image" id="image1" src="./simulation_main_image/image_1.png" alt="KT 해킹 이미지">
+    <img class="screen-image" id="image2" src="./simulation_main_image/image_2.png" alt="SKT 해킹 이미지">
+    <img class="screen-image" id="image3" src="./simulation_main_image/image_3.png" alt="스미싱 이미지">
+    <img class="screen-image" id="image4" src="./simulation_main_image/image_4.png" alt="큐싱 이미지">
+    <div class="text-area" id="textArea"></div>
+  </div>
+</div>
+
+<script>
+  const textGroups = [
+    {
+      intro: "가장 최근에 일어났던 KT 소액결제 해킹 사건에 대해 아시나요?",
+      imageId: "image1",
+      lines: [
+        "<span class='highlight'>KT 해킹 사고 — 전국 단위 피해 발생</span>",
+        "2025년 6~9월, <span class='highlight'>사회공학+자동화 해킹</span>으로 복수 서버 침해.",
+        "<span class='emphasis'>2만여 명 개인정보 유출</span> 및 <span class='highlight'>소액결제 362명, 2.4억 피해</span> 발생."
+      ]
+    },
+    {
+      intro: "작년에 가장 뜨거웠던 SKT 해킹 사고",
+      imageId: "image2",
+      lines: [
+        "<span class='highlight'>SKT 해킹 — 역대급 2,695만건 정보 유출</span>",
+        "<span class='highlight'>BPFDoor 백도어</span>로 리눅스 서버 침해, 핵심 인증 서버 장악.",
+        "<span class='emphasis'>과징금 1,348억</span>, 알뜰폰 포함 전국 가입자 정보 피해."
+      ]
+    },
+    {
+      intro: "악성 링크를 활용하여 일반인들을 타겟으로 한 스미싱 공격",
+      imageId: "image3",
+      lines: [
+        "<span class='highlight'>스미싱 — 하루 11만건 시도, 연쇄 피해 확산</span>",
+        "<span class='highlight'>택배·지원금·금융기관 사칭</span> 링크 클릭 시 악성앱 설치.",
+        "개인정보 탈취 → 가족·지인 사칭 문자로 <span class='highlight'>2차 피해</span>."
+      ]
+    },
+    {
+      intro: "공용 킥보드, 카페, 식당 등에서 QR코드를 활용하는 큐싱 공격",
+      imageId: "image4",
+      lines: [
+        "<span class='highlight'>큐싱 — QR코드 기반 해킹 기승</span>",
+        "가짜 QR 코드로 <span class='highlight'>악성앱 유도</span>, 원격제어·결제 피해까지.",
+        "<span class='emphasis'>대출 사칭·주차장 QR 조작 등 실생활 침투형 공격</span>."
+      ]
+    }
+  ];
+
+  const textArea = document.getElementById("textArea");
+  const skipBtn = document.getElementById("skipBtn");
+  const progressDots = document.querySelectorAll('.progress-dot');
+  let currentIndex = 0;
+
+  skipBtn.addEventListener("click", () => {
+    const screen = document.getElementById("screen");
+    screen.classList.add("slide-down");
+    setTimeout(() => {
+      window.location.href = "simulation_main.html";
+    }, 1500);
+  });
+
+  function updateProgress(index) {
+    progressDots.forEach((dot, i) => {
+      if (i === index) {
+        dot.classList.add('active');
+      } else {
+        dot.classList.remove('active');
+      }
+    });
+  }
+
+  function showTextGroup(lines) {
+    const div = document.createElement("div");
+    div.className = "text-group";
+    lines.forEach(line => {
+      const p = document.createElement("p");
+      p.innerHTML = line;
+      div.appendChild(p);
+    });
+    textArea.appendChild(div);
+    setTimeout(() => div.classList.add("show"), 50);
+  }
+
+  function showFinalMessage() {
+    textArea.innerHTML = `<p id="final-message">공격 당해볼 준비가 되셨나요?<br>그렇다면 시작할게요.</p>`;
+    textArea.style.display = "flex";
+
+    setTimeout(() => {
+      document.getElementById("final-message").classList.add("show");
+    }, 100);
+
+    // 스크린 내려가기
+    setTimeout(() => {
+      const screen = document.getElementById("screen");
+      screen.classList.add("slide-down");
+    }, 2500);
+
+    // 페이지 이동
+    setTimeout(() => {
+      window.location.href = "simulation_main.html";
+    }, 4200);
+  }
+
+  function sequence(index) {
+    if (index >= textGroups.length) {
+      showFinalMessage();
+      return;
+    }
+
+    currentIndex = index;
+    updateProgress(index);
+
+    const { intro, imageId, lines } = textGroups[index];
+    textArea.innerHTML = `<p class='intro-question'>${intro}</p>`;
+    textArea.style.display = "flex";
+
+    setTimeout(() => {
+      textArea.style.display = "none";
+
+      const img = document.getElementById(imageId);
+      img.style.display = "block";
+
+      setTimeout(() => {
+        img.style.display = "none";
+        textArea.innerHTML = "";
+        textArea.style.display = "flex";
+
+        showTextGroup(lines);
+
+        setTimeout(() => {
+          textArea.innerHTML = "";
+          sequence(index + 1);
+        }, 4500);
+
+      }, 2800);
+
+    }, 2200);
+  }
+
+  // Start sequence
+  setTimeout(() => {
+    sequence(0);
+  }, 500);
+</script>
+
+</body>
+</html>

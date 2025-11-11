@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>문항별 해설 보기</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+KR:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;background:#0a0a0a;color:#e9f7f3;font-family:'Noto Sans KR',sans-serif}
+    /* background grid + subtle glow to match main */
+    body::before{content:'';position:fixed;inset:0;background:
+      radial-gradient(circle at 20% 50%, rgba(255,0,100,0.08), transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(0,255,200,0.06), transparent 40%);
+      z-index:0}
+    body::after{content:'';position:fixed;inset:0;background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);background-size:50px 50px;z-index:0;pointer-events:none}
+    .wrap{position:relative;z-index:10;padding:48px 24px;max-width:1100px;margin:0 auto}
+
+    .page-title{font-family:'Orbitron',sans-serif;color:#7ef0d8;text-align:center;font-size:1.6rem;margin-bottom:18px}
+    .page-sub{color:rgba(255,255,255,0.6);text-align:center;margin-bottom:28px}
+
+    .accordion{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(0,255,204,0.06);border-radius:12px;overflow:hidden;box-shadow:0 8px 40px rgba(0,255,204,0.03);}
+    .item{border-top:1px solid rgba(255,255,255,0.03)}
+    .item:first-child{border-top:0}
+
+    .question-btn{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;cursor:pointer;background:transparent;color:#e6fff9;border:none;width:100%}
+    .question-btn .qtext{font-weight:700}
+    .question-btn .caret{width:36px;height:36px;border:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;border-radius:8px;background:linear-gradient(180deg, rgba(0,0,0,0.2), rgba(255,255,255,0.01));color:#dffef0;font-weight:700}
+
+    .panel{padding:0 20px 20px 20px;color:#cfeee6;line-height:1.7;display:none}
+    .panel .hint{background:rgba(0,0,0,0.35);border-left:4px solid #00ffcc;padding:12px;border-radius:6px;margin-bottom:12px;color:#d8fff6}
+    .panel .explain{background:rgba(0,0,0,0.35);padding:16px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+
+    .badge{display:inline-block;padding:6px 10px;border-radius:8px;background:linear-gradient(90deg,#00ffcc22,#00ffcc11);color:#aaffdf;font-weight:700;margin-right:8px;border:1px solid rgba(0,255,204,0.08)}
+
+    /* small top controls */
+    .controls{display:flex;gap:12px;justify-content:center;margin-bottom:20px}
+    .controls button{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#dffef0;padding:8px 12px;border-radius:8px;cursor:pointer}
+    .controls button:hover{border-color:#00ffcc;color:#00ffcc}
+
+    /* responsive */
+    @media (max-width:720px){.question-btn{padding:14px}.panel{padding:0 14px 18px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <button onclick="location.href='quiz_result.html'" style="position: absolute; top: 24px; left: 24px; z-index: 20; background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #e9f7f3; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+      ← 결과로 돌아가기
+    </button>
+    <div class="page-title">문항별 해설 보기</div>
+    <div class="page-sub">각 문항의 정답과 해설을 읽어 보세요. (이미 푼 경우에만 해당 내용이 정확합니다.)</div>
+
+    <div class="controls">
+      <button id="expandAll">전체 펼치기</button>
+      <button id="collapseAll">전체 닫기</button>
+      <button id="resetFilter">필터 초기화</button>
+    </div>
+
+    <div id="accordion" class="accordion"></div>
+  </div>
+
+  <script>
+    // 데이터: 10문항 (간단한 샘플 문항/정답/해설)
+    const qa = [
+      { q: 'Q1. 친구가 보낸 링크입니다. 눌러도 될까요?', correct: '누르지 않는다', hint: '친구 계정이 해킹되었을 가능성을 항상 의심하세요.', explain: '친구 계정이 해킹되어 악성 링크가 전송되었을 수 있습니다. 가장 안전한 방법은 전화로 직접 확인하거나 원본 메시지를 보내준 경로로 재확인하는 것입니다.', userAnswer: null, isCorrect: null },
+      { q: 'Q2. 공공장소에서 무료 와이파이를 사용하라는 팝업이 떴습니다. 어떻게 하시겠습니까?', correct: '공식 앱 또는 모바일 데이터 사용', hint: '공용 와이파이는 중간자 공격에 취약합니다.', explain: '공용 와이파이는 암호화가 약하거나 악성 AP가 있을 수 있으므로, 금융/중요 서비스는 모바일 데이터를 사용하거나 VPN을 사용하세요.', userAnswer: null, isCorrect: null },
+      { q: 'Q3. \"이벤트 당첨\" 문자를 받았습니다. 어떻게 하시겠습니까?', correct: '발신자 확인 후 공식 채널에서 확인', hint: '클릭 전 먼저 출처를 확인하세요.', explain: '단축 링크나 의심스러운 URL은 클릭하지 말고, 공식 웹사이트 또는 앱에서 당첨 여부를 직접 확인하십시오.', userAnswer: null, isCorrect: null },
+      { q: 'Q4. 은행에서 계정 비활성화 알림과 함께 링크가 왔습니다. 어떻게 하시겠습니까?', correct: '은행 고객센터에 직접 연락', hint: '금융 관련 링크는 항상 의심하세요.', explain: '은행은 보통 링크로 비밀번호를 요구하지 않습니다. 의심스러우면 전화로 확인하세요.', userAnswer: null, isCorrect: null },
+      { q: 'Q5. 앱 설치 권한을 묻는 팝업이 자주 뜹니다. 어떻게 하시겠습니까?', correct: '권한 요구가 과도하면 설치하지 않음', hint: '앱 권한은 최소 권한 원칙을 따르세요.', explain: '권한이 불필요하게 많다면 악성 앱일 가능성이 있습니다. 공식 스토어와 리뷰를 확인하세요.', userAnswer: null, isCorrect: null },
+      { q: 'Q6. 공공기관을 사칭한 이메일이 왔습니다. 확인 방법은?', correct: '이메일 헤더/발신 도메인 확인', hint: '발신 도메인이 공식 도메인과 일치하는지 확인하세요.', explain: '보낸 사람의 이메일 주소와 링크의 실제 목적지를 확인하고, 의심스러우면 기관에 직접 문의하세요.', userAnswer: null, isCorrect: null },
+      { q: 'Q7. 친구가 SNS로 파일을 보냈습니다. 열어도 될까요?', correct: '바이러스 검사 후 열기', hint: '의심스러운 파일은 바로 열지 마세요.', explain: '파일 확장자와 출처를 확인하고, 가능하면 바이러스 검사 후 열어야 안전합니다.', userAnswer: null, isCorrect: null },
+      { q: 'Q8. 비밀번호 재사용이 편리합니다. 계속 사용하시겠습니까?', correct: '아니오 — 각 사이트별 고유 비밀번호 사용', hint: '한 계정이 털리면 연쇄 피해가 발생합니다.', explain: '비밀번호 관리자 사용을 권장합니다. 2단계 인증도 활성화하세요.', userAnswer: null, isCorrect: null },
+      { q: 'Q9. 스마트폰에 알 수 없는 앱이 설치되어 있습니다. 어떻게 하겠습니까?', correct: '즉시 제거하고 권한 확인', hint: '모르는 앱은 위험 신호입니다.', explain: '설치된 앱 목록과 권한을 확인하고, 필요시 공장 초기화를 고려하세요.', userAnswer: null, isCorrect: null },
+      { q: 'Q10. 낯선 링크가 포함된 메시지를 받았을 때 가장 안전한 대응은?', correct: '무시하거나 발신자에게 다른 채널로 확인', hint: '즉시 클릭하지 마세요.', explain: '의심스러운 링크는 클릭하지 말고 발신자에게 직접 전화 또는 기존 연락 수단으로 확인하세요.', userAnswer: null, isCorrect: null }
+    ];
+
+    // 사용자 응답 로컬스토리지에서 불러오기
+    const userAnswers = JSON.parse(localStorage.getItem('quiz_user_answers')) || [];
+    qa.forEach((item, idx) => {
+      if (userAnswers[idx] !== undefined && userAnswers[idx] !== null) {
+        item.userAnswer = userAnswers[idx];
+        item.isCorrect = (item.userAnswer === item.correct);
+      }
+    });
+
+    const accordion = document.getElementById('accordion');
+
+    function buildAccordion(list) {
+      accordion.innerHTML = '';
+      list.forEach((item, idx) => {
+        const it = document.createElement('div');
+        it.className = 'item';
+
+        const btn = document.createElement('button');
+        btn.className = 'question-btn';
+        btn.type = 'button';
+        btn.innerHTML = `<div class="qtext">${item.q}</div><div class="caret">${idx+1}</div>`;
+
+        const panel = document.createElement('div');
+        panel.className = 'panel';
+        panel.innerHTML = `
+          <div class="hint">정답: <span class="badge">${item.correct}</span></div>
+          <div class="explain">${item.explain}</div>
+        `;
+
+        btn.addEventListener('click', () => {
+          const open = panel.style.display === 'block';
+          document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
+          if (!open) panel.style.display = 'block';
+          setTimeout(()=>{ panel.scrollIntoView({behavior:'smooth',block:'center'}); },120);
+        });
+
+        it.appendChild(btn);
+        it.appendChild(panel);
+        accordion.appendChild(it);
+      });
+    }
+
+    // 초기 빌드 (모든 10문항)
+    buildAccordion(qa);
+
+    // 컨트롤: 전체 펼치기 / 닫기 / 오답만 보기(샘플) / 필터 초기화
+    document.getElementById('expandAll').addEventListener('click', () => {
+      document.querySelectorAll('.panel').forEach(p => p.style.display = 'block');
+    });
+    document.getElementById('collapseAll').addEventListener('click', () => {
+      document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
+    });
+
+
+    document.getElementById('resetFilter').addEventListener('click', () => {
+      // 리셋 (실제 사용 시에는 서버 값으로 다시 로드)
+      qa.forEach(x => x.isCorrect = null);
+      buildAccordion(qa);
+    });
+
+    // (선택) 서버/DB 연동: 필요한 경우 fetch로 실사용 데이터 불러와 여기 qa 배열을 채우면 됨.
+  </script>
+</body>
+</html>

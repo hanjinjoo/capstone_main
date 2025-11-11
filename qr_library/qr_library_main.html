@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>오산대학교 도서관</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="./styles.css" />
+  <style>
+    :root{
+      --osu-navy:#0e3a6d;      /* 헤더 네이비 */
+      --osu-navy-2:#123e73;    /* 보조 네이비 */
+      --osu-blue:#2f5aff;      /* 검색 버튼 파란색 */
+      --osu-magenta:#d9004c;   /* 로그인/로그아웃 계열 */
+      --osu-gray-1:#f4f7fb;    /* 카드 배경 */
+      --osu-gray-2:#e6edf5;    /* 라이트 라인 */
+      --osu-gray-3:#c9d3df;    /* 인풋 보더 */
+      --osu-icon:#1f3b73;      /* 아이콘 컬러 */
+      --osu-orange:#f9a826;    /* 아이콘 포인트점 */
+      --text-strong:#10233f;   
+    }
+    .logo {
+      height: 42px;
+      width: auto;
+      vertical-align: middle;
+      display: inline-block;
+      object-fit: contain;
+      background-color: transparent;
+    }
+    .bar {background-color: var(--osu-navy); color:#fff; font-weight:400}
+    .bar a {color:#fff;}
+    .bar .sep{margin-left:10px}
+    .bar .status{gap:10px}
+    .bar .status .btn-loginlike{background:var(--osu-magenta); padding:4px 10px; border-radius:4px; color:#fff !important; font-weight:700}
+    header.navwrap{background:#fff; border-bottom:2px solid var(--osu-navy); box-shadow:0 2px 6px rgba(0,0,0,.05)}
+    header.navwrap nav a{color:var(--osu-navy-2); font-weight:600; text-decoration:none; margin:0 12px; padding:14px 2px; display:inline-block}
+    header.navwrap nav{ position: relative; }
+    header.navwrap nav a:hover{
+      border-bottom:3px solid var(--osu-navy-2);
+      background: rgba(18,62,115,0.08);
+    }
+    header.navwrap nav li:hover > a{
+      background: rgba(18,62,115,0.15);
+      color:#0e3a6d;
+    }
+    .brand .txt{font-size:22px; font-weight:700; color:var(--osu-navy-2); margin-left:8px; vertical-align:middle}
+
+    /* 검색창 */
+    .search-card{background:#fff; border-radius:18px; box-shadow:0 8px 24px rgba(16,35,63,.15)}
+    .search input{border:2px solid var(--osu-gray-3); height:52px}
+    .search button{background:var(--osu-blue);}
+
+    /* 아이콘 타일 */
+    .icon-rows li a{background:transparent}
+    .icon-rows .ico{width:76px; height:76px; border-radius:50%; background:var(--osu-gray-1); border:1.5px solid var(--osu-gray-2); display:flex; align-items:center; justify-content:center}
+    .icon-rows .ico i{font-size:30px; color:var(--osu-icon)}
+    .icon-rows .ico::after{content:""; position:absolute; width:12px; height:12px; border-radius:50%; background:var(--osu-orange); bottom:9px; right:9px}
+    .icon-rows li a:hover .ico{transform:translateY(-2px); box-shadow:0 6px 16px rgba(0,0,0,.08)}
+    .icon-rows em{color:#111}
+
+    .quick .q-btn{background:#fff; border:1px solid var(--osu-gray-2); color:var(--osu-navy-2); box-shadow:0 2px 6px rgba(0,0,0,.06)}
+    .quick .q-btn:hover{border-color:var(--osu-navy-2)}
+    .quick .q-btn::after{content:""; position:absolute; right:-6px; top:50%; transform:translateY(-50%); width:6px; height:20px; background:var(--osu-navy-2); border-radius:3px}
+    .quick .q-btn.narrow::after{display:none}
+
+
+    /* Adjust nav ul to flex for proper submenu positioning */
+    header.navwrap nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    header.navwrap nav li {
+      position: relative;
+    }
+  </style>
+</head>
+<body id="top">
+  <!-- 상단 좁은 파란바 (KOR/ENG + 상태) -->
+  <div class="bar">
+    <div class="container bar-inner">
+      <ul class="lang"><li><a href="#">KOR</a></li><li><a href="#">ENG</a></li></ul>
+      <ul class="status">
+        <li><a href="#">연체중 <b>0</b>건,</a></li>
+        <li><a href="#">대출중 <b>0</b>건</a></li>
+        <li class="strong">OOO님!</li>
+        <li class="sep"><a href="#" class="btn-loginlike">로그아웃</a></li>
+        <li class="sep hide-mobile"><a href="#">최근검색</a></li>
+        <li class="sep hide-mobile"><a href="#">HOME</a></li>
+        <li class="sep"><a href="#">오산대학교</a></li>
+        <li class="sns"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-youtube"></i></a><a href="#"><i class="fab fa-facebook-square"></i></a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 메인 네비 (흰 배경) -->
+  <header class="navwrap">
+    <div class="container nav">
+      <a class="brand" href="#">
+        <img src="logo.png" alt="오산대학교 로고" class="logo">
+        <span class="txt">도서관</span>
+      </a>
+      <nav>
+        <ul>
+          <li>
+            <a href="#page01">소장자료 검색</a>
+          </li>
+          <li>
+            <a href="#page02">도서관 자료</a>
+          </li>
+          <li>
+            <a href="#page03">신청·예약</a>
+          </li>
+          <li>
+            <a href="#notice">게시판</a>
+          </li>
+          <li>
+            <a href="#services">도서관 서비스</a>
+          </li>
+          <li>
+            <a href="#guide">도서관안내</a>
+          </li>
+          <li>
+            <a href="#mylib" class="last">My Library</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 우측 퀵메뉴 -->
+  <aside class="quick">
+    <button class="q-btn" onclick="location.href='#page01'">통합검색</button>
+    <button class="q-btn" onclick="location.href='#page02'">캘린더</button>
+    <button class="q-btn" onclick="location.href='#page03'">이용 시간 안내</button>
+    <button class="q-btn" onclick="location.href='#page04'">사이트맵</button>
+    <button class="q-btn narrow" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fa fa-angle-up"></i></button>
+  </aside>
+
+  <!-- PAGE 01: 흰색 카드 + 검색 + 아이콘 5x3 -->
+  <section id="page01" class="section hero-v2" style="background-image: url('./library_image.jpg'); background-size: cover; background-position: center;">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="search-card">
+        <form class="search" onsubmit="return false">
+          <label for="q" class="sr-only">검색어 입력창</label>
+          <input id="q" type="text" placeholder="검색어를 입력해 주세요." />
+          <button type="submit" aria-label="검색"><i class="fa fa-search"></i></button>
+        </form>
+
+        <ul class="icon-rows">
+          <li><a href="#"><span class="ico"><i class="fa-solid fa-book"></i></span><em>자료 구입 신청</em></a></li>
+          <li><a href="#"><span class="ico"><i class="fa-solid fa-hand-holding"></i></span><em>대출/연장/예약</em></a></li>
+          <li><a href="#"><span class="ico"><i class="fa-solid fa-file-lines"></i></span><em>전자책</em></a></li>
+          <li><a href="#"><span class="ico"><i class="fa-solid fa-headphones"></i></span><em>오디오북</em></a></li>
+          <li><a href="#"><span class="ico"><i class="fa-solid fa-newspaper"></i></span><em>전자잡지</em></a></li>
+
+          <li><a href="#"><span class="ico"><i class="fa-solid fa-certificate"></i></span><em>국가기술자격증/어학 강좌</em></a></li>
+          <li><a href="#"><span class="ico"><i class="fa-solid fa-desktop"></i></span><em>IT자격증/실무 강좌</em></a></li>
+          <li><a href="#"><span class="ico"><i class="fa-solid fa-scroll"></i></span><em>스콜라</em></a></li>
+          <li><a href="#"><span class="ico"><i class="fa-solid fa-database"></i></span><em>DBpia</em></a></li>
+          <li><a href="#"><span class="ico"><i class="fa-solid fa-globe"></i></span><em>KISS</em></a></li>
+
+          <li><a href="#"><span class="ico"><i class="fa-solid fa-folder-open"></i></span><em>학과별정보가이드</em></a></li>
+          <li><a href="#"><span class="ico"><i class="fa-solid fa-child"></i></span><em>유아교육 특성화 장서</em></a></li>
+          <li><a href="#"><span class="ico"><i class="fa-solid fa-dog"></i></span><em>동물보건 특성화 장서</em></a></li>
+          <li><a href="#"><span class="ico"><i class="fa-solid fa-book-open-reader"></i></span><em>RISS</em></a></li>
+          <li><a href="#"><span class="ico"><i class="fa-solid fa-calendar-days"></i></span><em>행사안내/참여신청</em></a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 02 ~ 04: 기존 v1 구조 재사용 -->
+  <section id="page02" class="section">
+    <div class="container two-col">
+      <div class="left panel">
+        <h3>캘린더</h3>
+        <div class="cal-wrapper">
+          <div class="calendar-header">
+            <button class="nav-btn" id="prevBtn" aria-label="이전 달"><i class="fa fa-angle-left"></i></button>
+            <h4 id="calTitle">2025년 11월</h4>
+            <div class="btns">
+              <button class="today" id="todayBtn">오늘</button>
+              <button class="nav-btn" id="nextBtn" aria-label="다음 달"><i class="fa fa-angle-right"></i></button>
+            </div>
+          </div>
+          <div class="calendar-grid" id="calendarGrid">
+            <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+          </div>
+        </div>
+      </div>
+      <div class="right panel">
+        <div class="notice">
+          <div class="title">
+            <h3 id="notice">공지사항</h3>
+            <a href="#" class="more"><i class="fas fa-bars"></i></a>
+          </div>
+          <ul class="notice-list">
+            <li><a href="#">[행사] 2025학년도 오산대학교 도서관 이용자 만족도 설문조사 안내</a><span>2025.11.03</span></li>
+            <li><a href="#">[행사] 2025학년도 도서대출EVENT [대출하GO! 선물받GO!]</a><span>2025.10.30</span></li>
+            <li><a href="#">[행사] 2025학년도 2학기 도서관 간식 나눔 이벤트 안내</a><span>2025.10.15</span></li>
+            <li><a href="#">[안내] 2025학년도 2학기 역량평가(중간)기간 도서관 연장운영</a><span>2025.09.30</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="table-list">
+        <table>
+          <caption>도서관행사 안내</caption>
+          <thead><tr><th>일정</th><th>내용</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>2025-11-20 ~ 2025-11-20</td><td class="left"><i class="point point04"></i><span>[시설]  </span>도서관 채움북스 임시 휴실</td><td></td></tr>
+            <tr><td>2025-11-13 ~ 2025-11-13</td><td class="left"><i class="point point04"></i><span>[시설]  </span>2026학년도 대학수학능력시험</td><td></td></tr>
+            <tr><td>2025-11-12 ~ 2025-11-12</td><td class="left"><i class="point point04"></i><span>[시설]  </span>도서관 채움북스 임시 휴실</td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="page03" class="section">
+    <div class="container">
+      <h3>이용시간 안내</h3>
+      <div class="table-wrap">
+        <table class="hours">
+          <caption>학기중 이용시간</caption>
+          <thead>
+            <tr><th colspan="2">구분</th><th>학기중</th><th>방학중</th><th>시험기간(시험전주 포함)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>6F</td><td>자료열람실</td><td rowspan="4">09:00 ~ 18:00</td><td rowspan="4">09:30 ~ 15:00</td><td>09:00 ~ 18:00</td></tr>
+            <tr><td rowspan="3">5F</td><td>디지털정보실</td><td rowspan="3">09:00 ~ 22:00</td></tr>
+            <tr><td>채움북스</td></tr>
+            <tr><td>스터디룸</td></tr>
+            <tr><td>1F</td><td>무인반납기</td><td colspan="3">24시간</td></tr>
+          </tbody>
+        </table>
+        <ul class="notes">
+          <li>※ 방학중 단축운영: 학교의 방학근무 지침에 따라 기간 운영 및 세부사항 준수</li>
+          <li class="red">휴관 : 주말 및 국정공휴일, 개교기념일, 기타 임시휴관일</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="page04" class="section">
+    <div class="container sitemap">
+      <h3 class="sr-only">Site Map</h3>
+      <div class="columns">
+        <div class="col"><h4>소장자료 검색</h4><ul><li><a href="#">통합검색</a></li><li><a href="#">주제분류 검색</a></li><li><a href="#">멀티미디어검색</a></li><li><a href="#">신착자료</a></li><li><a href="#">인기자료</a></li></ul></div>
+        <div class="col"><h4>도서관 자료</h4><ul><li><a href="#">전자책</a></li><li><a href="#">오디오북</a></li><li><a href="#">전자잡지</a></li><li><a href="#">Web DB</a></li><li><a href="#">동영상 강좌</a></li><li><a href="#">학과별정보가이드</a></li></ul></div>
+        <div class="col"><h4>신청·예약</h4><ul><li><a href="#">좌석 예약</a></li><li><a href="#">PC좌석 예약</a></li><li><a href="#">시설 예약</a></li><li><a href="#">기자재 예약</a></li><li><a href="#">행사안내/참여신청</a></li></ul></div>
+        <div class="col"><h4>게시판</h4><ul><li><a href="#">공지사항</a></li><li><a href="#">1:1 문의하기</a></li><li><a href="#">자주찾는 질문</a></li></ul></div>
+        <div class="col"><h4>도서관 서비스</h4><ul><li><a href="#">전자책 제작 신청</a></li><li><a href="#">타도서관 이용 신청</a></li><li><a href="#">장애학생 지원 서비스</a></li><li><a href="#">도서관 회원 서비스</a></li><li><a href="#">도서관 비회원 서비스</a></li></ul></div>
+        <div class="col"><h4>도서관안내</h4><ul><li><a href="#">도서관 소개</a></li><li><a href="#">도서관 직원</a></li><li><a href="#">도서관 이용안내</a></li><li><a href="#">종합정보관 안내</a></li></ul></div>
+        <div class="col"><h4>My Library</h4><ul><li><a href="#">나의 폴더</a></li><li><a href="#">대출/연장/예약</a></li><li><a href="#">자료 구입 신청/조회</a></li><li><a href="#">받은 메시지</a></li><li><a href="#">개인정보관리</a></li></ul></div>
+      </div>
+      <footer class="footer">
+        <p class="links"><a href="#">개인정보처리방침</a><a href="#">이메일무단수집거부</a></p>
+        <address>18119 경기도 오산시 청학로45 &nbsp; TEL.031-370-2591~4  FAX.031-370-2884</address>
+        <p class="copy">Copyright(c) 2025 OSAN University Library. All rights reserved.</p>
+      </footer>
+    </div>
+  </section>
+
+  <!-- Popup Modal -->
+  <div id="surveyModal" style="display:none; position:fixed; top:40px; right:40px; z-index:10000;">
+    <div style="background:linear-gradient(135deg, #e6f0ff, #ffffff); border:3px solid #2f5aff; border-radius:20px; width:480px; box-shadow:0 8px 24px rgba(47,90,255,0.3); position:relative; padding:36px; text-align:center; font-family:'Noto Sans KR', sans-serif; color:#0e3a6d;">
+      <button id="closeModalBtn" style="position:absolute; top:12px; right:12px; background:#2f5aff; color:#fff; border:none; border-radius:50%; width:34px; height:34px; font-size:1.1rem; cursor:pointer;">✕</button>
+      <h2 style="font-size:1.6rem; font-weight:900; color:#123e73; margin-bottom:12px;">🎉 해울제 초청 연예인 투표하러 가요!</h2>
+      <p style="font-size:1rem; color:#333; line-height:1.5; margin-bottom:20px;">
+        학생이 원하는 가수를 초청하기 위한<br><strong style="color:#2f5aff;">‘해울제 초청 연예인 투표’</strong>에 참여해주세요!<br>
+        여러분의 한 표가 무대를 만듭니다 🎤
+      </p>
+
+      <div style="background:#fff; border:2px solid #2f5aff; border-radius:14px; padding:14px; width:85%; margin:0 auto 16px;">
+        <img src="qrcode.png" alt="해울제 초청 연예인 투표 QR 코드" style="width:100%; height:auto; border-radius:10px;"/>
+      </div>
+
+      <div style="text-align:left; font-size:0.95rem; margin:0 auto; background:#f4f7ff; border-radius:10px; padding:12px 16px; width:85%; color:#0e3a6d;">
+        <p><strong>📅 참여기간:</strong> 2025.11.06 ~ 2025.11.15</p>
+        <p><strong>👥 참여대상:</strong> 오산대학교 재학생 누구나</p>
+        <p><strong>📱 참여방법:</strong> 위 QR 코드를 스캔해 바로 투표!</p>
+      </div>
+
+      <p style="margin-top:18px; font-size:0.9rem; color:#123e73; font-weight:600;">
+        오산대학교 학생들의 열정을 보여주세요 💙
+      </p>
+    </div>
+  </div>
+
+  <script src="./scripts.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const modal = document.getElementById('surveyModal');
+      const closeBtn = document.getElementById('closeModalBtn');
+
+      // Show the modal on page load
+      modal.style.display = 'block';
+
+      // Close button event
+      closeBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+      });
+
+      // Removed the code that closes the modal when clicking outside
+    });
+  </script>
+</body>
+</html>
